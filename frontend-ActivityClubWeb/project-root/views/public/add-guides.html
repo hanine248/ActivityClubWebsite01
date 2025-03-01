@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Guides to Event</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .btn {
+            display: inline-block;
+            background: #333;
+            color: #fff;
+            padding: 10px 20px;
+            margin: 20px 0;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>Add Guides to Event</h1>
+    
+    <table id="guidesTable">
+        <thead>
+            <tr>
+                <th>Select</th>
+                <th>Guide ID</th>
+                <th>Guide Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Guides data will be inserted here dynamically -->
+        </tbody>
+    </table>
+
+    <button id="submitGuides" class="btn">Add Selected Guides to Event</button>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Function to get the Event ID from the URL
+        function getEventIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('eventid');
+        }
+
+        // Function to handle adding guides to the event
+        function addGuidesToEvent(eventid, selectedGuides) {
+            selectedGuides.forEach(guideId => {
+                $.ajax({
+                    url: 'http://localhost:5049/api/EventGuide',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        eventid: eventid,
+                        guideid: guideId
+                    }),
+                    success: function() {
+                        console.log(`Successfully added guide ${guideId} to event ${eventid}`);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(`Error adding guide ${guideId} to event ${eventid}:`, error);
+                    }
+                });
+            });
+        }
+
+        $(document).ready(function() {
+            const eventid = getEventIdFromUrl();
+            console.log('Retrieved Event ID:', eventid);
+
+            if (eventid) {
+                // Fetch the list of guides from the API
+                $.ajax({
+                    url: 'http://localhost:5049/api/Guide',
+                    method: 'GET',
+                    success: function(data) {
+                        const guidesTable = $('#guidesTable tbody');
+                        guidesTable.empty(); // Clear any existing rows
+
+                        if (data.$values && Array.isArray(data.$values) && data.$values.length > 0) {
+                            // Loop through the guides and append rows to the table
+                            data.$values.forEach(guide => {
+                                guidesTable.append(`
+                                    <tr>
+                                        <td><input type="checkbox" class="guideCheckbox" value="${guide.guideid}"></td>
+                                        <td>${guide.guideid}</td>
+                                        <td>${guide.name || ''}</td>
+                                    </tr>
+                                `);
+                            });
+                        } else {
+                            guidesTable.append('<tr><td colspan="3">No guides found.</td></tr>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching guides:', error);
+                        $('#guidesTable tbody').html('<tr><td colspan="3">Error fetching guides. Please try again later.</td></tr>');
+                    }
+                });
+
+                // Handle the form submission when the "Add Selected Guides" button is clicked
+                $('#submitGuides').click(function() {
+                    const selectedGuides = [];
+                    $('.guideCheckbox:checked').each(function() {
+                        selectedGuides.push($(this).val());
+                    });
+
+                    if (selectedGuides.length === 0) {
+                        alert('Please select at least one guide to add.');
+                    } else {
+                        // Add selected guides to the event
+                        addGuidesToEvent(eventid, selectedGuides);
+                        alert('Selected guides added to the event successfully.');
+                    }
+                });
+            } else {
+                console.error('Event ID not found in the URL.');
+                $('#guidesTable tbody').html('<tr><td colspan="3">No event ID provided. Please return to the events list and try again.</td></tr>');
+            }
+        });
+    </script>
+</body>
+</html>
+

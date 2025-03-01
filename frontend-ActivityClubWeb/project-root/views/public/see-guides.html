@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Guides</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .btn {
+            display: inline-block;
+            background: #333;
+            color: #fff;
+            padding: 10px 20px;
+            margin: 20px 0;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>Event Guides</h1>
+    <a href="all-events.html" class="btn">Back to All Events</a>
+    
+    <table id="guidesTable">
+        <thead>
+            <tr>
+                <th>Guide ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Expertise</th>
+                <th>Phone Number</th>
+                <th>Date of Joining</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Guide data will be dynamically inserted here -->
+        </tbody>
+    </table>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function getEventIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('eventid');
+        }
+    
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString();
+        }
+    
+        $(document).ready(function() {
+            const eventid = getEventIdFromUrl();
+            console.log('Retrieved Event ID:', eventid);
+    
+            if (eventid) {
+                $.ajax({
+                    url: `http://localhost:5049/api/EventGuide/event/${eventid}/guides`,
+                    method: 'GET',
+                    success: function(response) {
+                        console.log('API response:', response);
+                        let guidesTableBody = $('#guidesTable tbody');
+                        guidesTableBody.empty();
+                        
+                        // Handle potential nesting of data
+                        let data = response.$values || response;
+                        
+                        if (data && Array.isArray(data) && data.length > 0) {
+                            data.forEach(guide => {
+                                guidesTableBody.append(`
+                                    <tr>
+                                        <td>${guide.guideid || 'N/A'}</td>
+                                        <td>${guide.name || 'N/A'}</td>
+                                        <td>${guide.email || 'N/A'}</td>
+                                        <td>${guide.expertise || 'N/A'}</td>
+                                        <td>${guide.phonenumber || 'N/A'}</td>
+                                        <td>${formatDate(guide.datejoining)}</td>
+                                    </tr>
+                                `);
+                            });
+                        } else {
+                            console.log('No guides data or empty array received');
+                            guidesTableBody.append('<tr><td colspan="6">No guides found for this event.</td></tr>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error details:', {
+                            status: xhr.status,
+                            statusText: xhr.statusText,
+                            responseText: xhr.responseText
+                        });
+                        $('#guidesTable tbody').html('<tr><td colspan="6">Error fetching guides. Please check the console and try again.</td></tr>');
+                    }
+                });
+            } else {
+                console.error('Event ID not found in the URL.');
+                $('#guidesTable tbody').html('<tr><td colspan="6">No event ID provided. Please return to the events list and try again.</td></tr>');
+            }
+        });
+    </script>
+</body>
+</html>

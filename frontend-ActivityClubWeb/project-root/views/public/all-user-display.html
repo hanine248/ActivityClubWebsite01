@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Users</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .btn {
+            display: inline-block;
+            background: #333;
+            color: #fff;
+            padding: 10px 20px;
+            margin: 20px 0;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>All Users</h1>
+    <a href="file:///C:/Users/user/FinalProject0/project-root/views/public/admin-dashboard.html" class="btn">Back to Dashboard</a>
+    <table id="allUsersTable">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Date of Birth</th>
+                <th>Nationality</th>
+                <th>Profession</th>
+                <th>Phone Number</th>
+                <th>Role ID</th>
+                <th>Date Joining</th>
+                <th>Emergency Number</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- All users will be dynamically inserted here -->
+        </tbody>
+    </table>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            const apiUrl = 'http://localhost:5049/api/User';
+
+            function fetchAllUsers() {
+                $.ajax({
+                    url: apiUrl,
+                    method: 'GET',
+                    success: function(data) {
+                        let usersTable = $('#allUsersTable tbody');
+                        usersTable.empty();
+                        console.log(data.$values);
+
+                        data.$values.forEach(user => {
+                            usersTable.append(`
+                                <tr>
+                                    <td>${user.userid}</td>
+                                    <td>${user.name || ''}</td>
+                                    <td>${user.email || ''}</td>
+                                    <td>${user.dateofbirth ? new Date(user.dateofbirth).toLocaleDateString() : ''}</td>
+                                    <td>${user.nationality || ''}</td>
+                                    <td>${user.profession || ''}</td>
+                                    <td>${user.phonenumber || ''}</td>
+                                    <td>${user.roleid || ''}</td>
+                                    <td>${user.datejoining ? new Date(user.datejoining).toLocaleDateString() : ''}</td>
+                                    <td>${user.emergencynumber || ''}</td>
+                                </tr>
+                            `);
+                        });
+                    },
+                    error: function(error) {
+                        console.error('Error fetching users:', error);
+                    }
+                });
+            }
+
+            // Fetch all users when the page loads
+            fetchAllUsers();
+        });
+    </script>
+</body>
+</html>

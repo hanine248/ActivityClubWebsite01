@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style>
+   body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #3498db;
+            padding: 1rem;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: flex-end;
+        }
+        nav ul li {
+            margin-left: 1rem;
+        }
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        nav ul li a:hover {
+            color: #ecf0f1;
+        }
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        #about-us {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+        }
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 0.5rem;
+        }
+        #events-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        .event-item {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+        .event-item:hover {
+            transform: translateY(-5px);
+        }
+        .event-item h3 {
+            color: #3498db;
+            margin-top: 0;
+        }
+        footer {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="registration.html">Register</a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="contact-us.html">Contact Us</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="about-us">
+            <h1>Welcome to our Activity Club</h1>
+            <p>Discover exciting events and connect with like-minded individuals. Join us for unforgettable experiences and create lasting memories.</p>
+        </section>
+
+        <section id="events-list">
+            <h2>Upcoming Events</h2>
+            <div id="events-container">
+                <!-- Events will be dynamically inserted here -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Activity Club. All rights reserved.</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        const eventsApiUrl = 'http://localhost:5049/api/Event';
+
+        function fetchEvents() {
+            $.ajax({
+                url: eventsApiUrl,
+                method: 'GET',
+                success: function(data) {
+                    let eventsContainer = $('#events-container');
+                    eventsContainer.empty(); // Clear existing events before adding new ones
+                    
+                    data.$values.forEach(event => {
+                        eventsContainer.append(`
+                            <div class="event-item">
+                                <h3>${event.name}</h3>
+                                <p>${event.description}</p>
+                                <p><strong>Date:</strong> ${event.dateto ? new Date(event.dateto).toLocaleDateString() : 'TBA'}</p>
+                                <p><strong>Destination:</strong> ${event.destination || 'TBA'}</p>
+                            </div>
+                        `);
+                    });
+                },
+                error: function(error) {
+                    console.error('Error fetching events:', error);
+                    $('#events-container').html('<p>Error loading events. Please try again later.</p>');
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            fetchEvents();
+        });
+    </script>
+</body>
+</html>
+
+

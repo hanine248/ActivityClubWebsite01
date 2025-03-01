@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "3e6hBaHBDNaOka1O6yUT0szZqssRsIMlVECCvt2baug=",
+  "Source": "ActivityClub.API",
+  "BasePath": "_content/ActivityClub.API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

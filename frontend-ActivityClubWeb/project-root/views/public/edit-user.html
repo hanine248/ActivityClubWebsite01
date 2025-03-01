@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update User Profile</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #e9ecef;
+        }
+        header {
+            background: #007bff;
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input[type="text"], input[type="password"], input[type="date"], input[type="tel"], input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Edit User Profile</h1>
+    </header>
+
+    <div class="container">
+        <div id="errorMessage" class="error"></div>
+        <form id="updateForm">
+            <input type="hidden" id="userid" name="userid" value="">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password">
+
+            <label for="dateofbirth">Date of Birth:</label>
+            <input type="date" id="dateofbirth" name="dateofbirth">
+
+            <label for="nationality">Nationality:</label>
+            <input type="text" id="nationality" name="nationality">
+
+            <label for="profession">Profession:</label>
+            <input type="text" id="profession" name="profession">
+
+            <label for="phonenumber">Phone Number:</label>
+            <input type="tel" id="phonenumber" name="phonenumber">
+
+            <label for="emergencyNumber">Emergency Number:</label>
+            <input type="tel" id="emergencyNumber" name="emergencyNumber">
+
+            <button type="submit">Update Profile</button>
+        </form>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            function getUrlParameter(name) {
+                name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+                var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+                var results = regex.exec(location.search);
+                return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+            }
+
+            var userId = getUrlParameter('userid');
+
+            function fetchUserProfile(id) {
+                $.ajax({
+                    url: `http://localhost:5049/api/User/${id}`,
+                    type: 'GET',
+                    contentType: 'application/json',
+                    success: function(userData) {
+                        populateForm(userData);
+                    },
+                    error: function(xhr) {
+                        console.error("Error fetching user data:", xhr.responseText);
+                        $('#errorMessage').text('Error loading user data. Please try again.');
+                    }
+                });
+            }
+
+            function populateForm(userData) {
+                $('#userid').val(userData.userid);
+                $('#name').val(userData.name);
+                $('#email').val(userData.email);
+                $('#dateofbirth').val(userData.dateofbirth);
+                $('#nationality').val(userData.nationality);
+                $('#profession').val(userData.profession);
+                $('#phonenumber').val(userData.phonenumber);
+                $('#emergencyNumber').val(userData.emergencyNumber);
+            }
+
+            function updateUserProfile(data) {
+                $.ajax({
+                    url: `http://localhost:5049/api/User/${data.userid}`,
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success: function() {
+                        alert('Profile updated successfully!');
+                        window.location.href = 'user-profile.html?userid=' + data.userid; // Redirect to profile page
+                    },
+                    error: function(xhr) {
+                        console.error("Error updating user data:", xhr.responseText);
+                        $('#errorMessage').text('Error updating profile. Please try again.');
+                    }
+                });
+            }
+
+            $('#updateForm').on('submit', function(event) {
+                event.preventDefault();
+                var formData = {
+                    userid: $('#userid').val(),
+                    name: $('#name').val(),
+                    email: $('#email').val(),
+                    password: $('#password').val(),
+                    dateofbirth: $('#dateofbirth').val(),
+                    nationality: $('#nationality').val(),
+                    profession: $('#profession').val(),
+                    phonenumber: $('#phonenumber').val(),
+                    emergencyNumber: $('#emergencyNumber').val(),
+                };
+
+                updateUserProfile(formData);
+            });
+
+            if (userId) {
+                fetchUserProfile(userId);
+            } else {
+                $('#errorMessage').text('No user ID provided. Unable to fetch profile data.');
+            }
+        });
+    </script>
+</body>
+</html>

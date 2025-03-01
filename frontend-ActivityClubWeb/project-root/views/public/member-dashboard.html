@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Dashboard</title>
+    <style>
+        /* Add your CSS styles here */
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Member Dashboard</h1>
+    </header>
+
+    <nav>
+        <!-- Navigation links -->
+        <a href="#profile" onclick="loadProfile()">Profile</a>
+        <a href="#events" onclick="loadJoinedEvents()">Joined Events</a>
+    </nav>
+
+    <main id="main-content">
+        <!-- Content will be loaded dynamically here -->
+    </main>
+
+    <script>
+        // Function to load profile information
+        function loadProfile() {
+            fetch('/api/member/profile')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('main-content').innerHTML = `
+                        <h2>Profile</h2>
+                        <form id="profile-form">
+                            <label for="name">Name:</label>
+                            <input type="text" id="name" value="${data.name}">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" value="${data.email}">
+                            <button type="button" onclick="updateProfile()">Update Profile</button>
+                        </form>
+                        <h3>Profile Photo</h3>
+                        <form id="profile-photo-form">
+                            <input type="file" id="profile-pic" name="profile-pic" accept="image/*">
+                            <button type="button" onclick="uploadProfilePhoto()">Upload Photo</button>
+                        </form>
+                    `;
+                });
+        }
+
+        // Function to load joined events
+        function loadJoinedEvents() {
+            fetch('/api/member/joined-events')
+                .then(response => response.json())
+                .then(data => {
+                    let eventsHtml = data.map(event => `
+                        <li>${event.name} - ${event.date}</li>
+                    `).join('');
+                    document.getElementById('main-content').innerHTML = `
+                        <h2>Joined Events</h2>
+                        <ul>
+                            ${eventsHtml}
+                        </ul>
+                    `;
+                });
+        }
+
+        // Function to update profile details
+        function updateProfile() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+
+            fetch('/api/member/update-profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Profile updated successfully');
+                loadProfile(); // Reload profile section to reflect changes
+            });
+        }
+
+        // Function to upload profile photo
+        function uploadProfilePhoto() {
+            const formData = new FormData(document.getElementById('profile-photo-form'));
+
+            fetch('/api/member/upload-profile-photo', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Profile photo uploaded successfully');
+                loadProfile(); // Reload profile section to reflect changes
+            });
+        }
+
+        // Initial load
+        loadProfile(); // Load profile initially
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+C:\Users\user\source\repos\FinalProject\ActivityClub.Services\bin\Debug\net8.0\ActivityClub.Services.deps.json
+C:\Users\user\source\repos\FinalProject\ActivityClub.Services\bin\Debug\net8.0\ActivityClub.Services.runtimeconfig.json
+C:\Users\user\source\repos\FinalProject\ActivityClub.Services\bin\Debug\net8.0\ActivityClub.Services.dll
+C:\Users\user\source\repos\FinalProject\ActivityClub.Services\bin\Debug\net8.0\ActivityClub.Services.pdb
+C:\Users\user\source\repos\FinalProject\ActivityClub.Services\bin\Debug\net8.0\ActivityClub.Core.dll
+C:\Users\user\source\repos\FinalProject\ActivityClub.Services\bin\Debug\net8.0\ActivityClub.Core.pdb
+C:\Users\user\source\repos\FinalProject\ActivityClub.Services\obj\Debug\net8.0\ActivityClub.Services.csproj.AssemblyReference.cache
+C:\Users\user\source\repos\FinalProject\ActivityClub.Services\obj\Debug\net8.0\ActivityClub.Services.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\source\repos\FinalProject\ActivityClub.Services\obj\Debug\net8.0\ActivityClub.Services.AssemblyInfoInputs.cache
+C:\Users\user\source\repos\FinalProject\ActivityClub.Services\obj\Debug\net8.0\ActivityClub.Services.AssemblyInfo.cs
+C:\Users\user\source\repos\FinalProject\ActivityClub.Services\obj\Debug\net8.0\ActivityClub.Services.csproj.CoreCompileInputs.cache
+C:\Users\user\source\repos\FinalProject\ActivityClub.Services\obj\Debug\net8.0\Activity.1492AA81.Up2Date
+C:\Users\user\source\repos\FinalProject\ActivityClub.Services\obj\Debug\net8.0\ActivityClub.Services.dll
+C:\Users\user\source\repos\FinalProject\ActivityClub.Services\obj\Debug\net8.0\refint\ActivityClub.Services.dll
+C:\Users\user\source\repos\FinalProject\ActivityClub.Services\obj\Debug\net8.0\ActivityClub.Services.pdb
+C:\Users\user\source\repos\FinalProject\ActivityClub.Services\obj\Debug\net8.0\ActivityClub.Services.genruntimeconfig.cache
+C:\Users\user\source\repos\FinalProject\ActivityClub.Services\obj\Debug\net8.0\ref\ActivityClub.Services.dll

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Event</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        form {
+            max-width: 600px;
+            margin: auto;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>Edit Event</h1>
+    <form id="editEventForm">
+        <input type="hidden" id="eventId" name="eventId">
+        
+        <label for="name">Event Name</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="description">Description</label>
+        <textarea id="description" name="description" required></textarea>
+
+        <label for="category">Category</label>
+        <input type="text" id="category" name="category" required>
+
+        <label for="destination">Destination</label>
+        <input type="text" id="destination" name="destination" required>
+
+        <label for="dateFrom">Date From</label>
+        <input type="date" id="dateFrom" name="dateFrom" required>
+
+        <label for="dateTo">Date To</label>
+        <input type="date" id="dateTo" name="dateTo" required>
+
+        <label for="cost">Cost</label>
+        <input type="number" id="cost" name="cost" required>
+
+        <label for="status">Status</label>
+        <input type="text" id="status" name="status" required>
+
+        <button type="submit">Update Event</button>
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function getEventIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('eventid');
+        }
+
+        $(document).ready(function() {
+            const eventid = getEventIdFromUrl();
+            console.log('Retrieved Event ID:', eventid);
+
+            if (eventid) {
+                // Fetch event details to populate the form
+                $.ajax({
+                    url: `http://localhost:5049/api/Event/${eventid}`,
+                    method: 'GET',
+                    success: function(event) {
+                        console.log('API response:', event);
+                        // Populate form fields with event data
+                        $('#eventId').val(event.eventid); // hidden field, user can't edit
+                        $('#name').val(event.name);
+                        $('#description').val(event.description);
+                        $('#category').val(event.category);
+                        $('#destination').val(event.destination);
+                        $('#dateFrom').val(event.datefrom ? event.datefrom.split('T')[0] : '');
+                        $('#dateTo').val(event.dateto ? event.dateto.split('T')[0] : '');
+                        $('#cost').val(event.cost);
+                        $('#status').val(event.status);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching event details:', error);
+                        alert('Error fetching event details. Please try again later.');
+                    }
+                });
+
+                // Handle form submission
+                $('#editEventForm').on('submit', function(e) {
+                    e.preventDefault();
+
+                    // Collect updated data
+                    const updatedEvent = {
+                        eventid: $('#eventId').val(), // Should not change
+                        name: $('#name').val(),
+                        description: $('#description').val(),
+                        category: $('#category').val(),
+                        destination: $('#destination').val(),
+                        datefrom: $('#dateFrom').val(),
+                        dateto: $('#dateTo').val(),
+                        cost: $('#cost').val(),
+                        status: $('#status').val()
+                    };
+
+                    console.log('Updated event data:', updatedEvent);
+
+                    // Send updated data via PUT request to update the event
+                    $.ajax({
+                        url: `http://localhost:5049/api/Event/${eventid}`,
+                        method: 'PUT',
+                        contentType: 'application/json',
+                        data: JSON.stringify(updatedEvent),
+                        success: function(response) {
+                            console.log('Update response:', response);
+                            alert('Event updated successfully!');
+                            window.location.href = 'all-events.html'; // Redirect after success
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error updating event:', error);
+                            alert('Error updating event. Please try again.');
+                        }
+                    });
+                });
+            } else {
+                console.error('Event ID not found in the URL.');
+                alert('No event ID provided. Please return to the events list.');
+            }
+        });
+    </script>
+</body>
+</html>
+

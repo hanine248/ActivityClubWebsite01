@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View User ID</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #result, #errorDetails {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+        }
+        #errorDetails {
+            background-color: #ffeeee;
+            display: none;
+        }
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>View User ID</h1>
+    <div id="result">Loading...</div>
+    <div id="errorDetails"></div>
+    <button onclick="window.location.href='index.html'">Back to Registration</button>
+    <button id="toggleErrorDetails" style="display:none;">Toggle Error Details</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        const apiUrl = 'http://localhost:5049/api/User';
+
+        function getParameterByName(name, url = window.location.href) {
+            name = name.replace(/[\[\]]/g, '\\$&');
+            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+
+        function getUserById(id) {
+            return $.ajax({
+                url: `${apiUrl}/${id}`,
+                method: 'GET',
+                contentType: 'application/json'
+            });
+        }
+
+        function displayErrorDetails(xhr, status, error) {
+            let errorMessage = `
+                <h3>Error Details:</h3>
+                <p>Status: ${status}</p>
+                <p>Error: ${error}</p>
+                <p>Response Text: ${xhr.responseText}</p>
+                <p>Status Code: ${xhr.status}</p>
+                <p>Ready State: ${xhr.readyState}</p>
+            `;
+            $('#errorDetails').html(errorMessage);
+            $('#toggleErrorDetails').show();
+        }
+
+        $(document).ready(function() {
+            const userId = getParameterByName('id');
+            if (userId) {
+                $('#result').html(`Attempting to fetch details for user ID: ${userId}`);
+                getUserById(userId)
+                    .done(function(userDetails) {
+                        console.log('User Details:', userDetails);
+                        if (userDetails && userDetails.id) {
+                            $('#result').html(`User ID confirmed: <strong>${userDetails.id}</strong><br>Name: ${userDetails.name}<br>Email: ${userDetails.email}`);
+                        } else {
+                            $('#result').html('User details received, but information is incomplete. Please contact support.');
+                            displayErrorDetails({responseText: JSON.stringify(userDetails)}, 'Success', 'Incomplete user data');
+                        }
+                    })
+                    .fail(function(xhr, status, error) {
+                        console.error('Error fetching user details:', xhr.responseText);
+                        $('#result').html('There was an error retrieving the user details. Please try again later or contact support.');
+                        displayErrorDetails(xhr, status, error);
+                    });
+            } else {
+                $('#result').html('No user ID provided. Please go back to the registration page and try again.');
+            }
+
+            $('#toggleErrorDetails').click(function() {
+                $('#errorDetails').toggle();
+            });
+        });
+    </script>
+</body>
+</html>

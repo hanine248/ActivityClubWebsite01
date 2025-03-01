@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update User</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        form {
+            display: grid;
+            gap: 10px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+     
+       
+    </style>
+</head>
+<body>
+    <h1>Update User</h1>
+    
+    <form id="updateUserForm">
+        <input type="hidden" id="userId" name="userId">
+        
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        
+        <label for="dateOfBirth">Date of Birth:</label>
+        <input type="date" id="dateOfBirth" name="dateOfBirth">
+        
+        <label for="nationality">Nationality:</label>
+        <input type="text" id="nationality" name="nationality">
+        
+        <label for="profession">Profession:</label>
+        <input type="text" id="profession" name="profession">
+        
+        <label for="phoneNumber">Phone Number:</label>
+        <input type="tel" id="phoneNumber" name="phoneNumber">
+        
+        <label for="roleId">Role ID:</label>
+        <input type="number" id="roleId" name="roleId" required>
+        
+        <label for="dateJoining">Date Joining:</label>
+        <input type="date" id="dateJoining" name="dateJoining">
+        
+        <label for="emergencyNumber">Emergency Number:</label>
+        <input type="tel" id="emergencyNumber" name="emergencyNumber">
+        
+        <button type="submit">Update User</button>
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        const apiUrl = 'http://localhost:5049/api/User';
+
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        };
+
+        // Fetch user data and populate form
+        $(document).ready(function() {
+            var userId = getUrlParameter('Userid');
+            if (userId) {
+                $.ajax({
+                    url: `${apiUrl}/${userId}`,
+                    method: 'GET',
+                    success: function(user) {
+                        $('#userId').val(user.userid);
+                        $('#name').val(user.name);
+                        $('#email').val(user.email);
+                        $('#dateOfBirth').val(user.dateofbirth ? user.dateofbirth.split('T')[0] : '');
+                        $('#nationality').val(user.nationality);
+                        $('#profession').val(user.profession);
+                        $('#phoneNumber').val(user.phonenumber);
+                        $('#roleId').val(user.roleid);
+                        $('#dateJoining').val(user.datejoining ? user.datejoining.split('T')[0] : '');
+                        $('#emergencyNumber').val(user.emergencynumber);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching user data:', xhr.responseText);
+                        alert('Error fetching user data. Please try again.');
+                    }
+                });
+            } else {
+                alert('No user ID provided.');
+            }
+        });
+
+        // Handle form submission
+        $('#updateUserForm').on('submit', function(e) {
+            e.preventDefault();
+            var userId = $('#userId').val();
+            let formData = {
+                userid: userId,
+                name: $('#name').val(),
+                email: $('#email').val(),
+                dateofbirth: $('#dateOfBirth').val(),
+                nationality: $('#nationality').val(),
+                profession: $('#profession').val(),
+                phonenumber: $('#phoneNumber').val(),
+                roleid: parseInt($('#roleId').val()),
+                datejoining: $('#dateJoining').val(),
+                emergencynumber: $('#emergencyNumber').val()
+            };
+
+            $.ajax({
+                url: `${apiUrl}/${userId}`,
+                method: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                success: function(response) {
+                    alert('User updated successfully!');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error updating user:', xhr.responseText);
+                    alert('Error updating user. Please try again.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

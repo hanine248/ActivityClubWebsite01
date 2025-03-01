@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    line-height: 1.6;
+}
+
+.header {
+    background-color: #3498db;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    margin: 20px;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: #2c3e50;
+    color: white;
+    height: 100vh;
+    padding-top: 20px;
+}
+
+.sidebar a {
+    display: block;
+    color: #ecf0f1;
+    padding: 15px;
+    text-decoration: none;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar a:hover {
+    background-color: #34495e;
+}
+
+/* Main content */
+.main-content {
+    flex: 1;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.main-content h2 {
+    margin-top: 0;
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 0.5rem;
+}
+
+.card {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card h3 {
+    margin-top: 0;
+    color: #3498db;
+}
+
+.btn {
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #2980b9;
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+}
+
+th {
+    background-color: #2c3e50;
+    color: white;
+}
+
+td {
+    background-color: #ecf0f1;
+}
+
+.user-actions {
+    margin-top: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #2c3e50;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+#eventsTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#eventsTable th, #eventsTable td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+#eventsTable th {
+    background-color: #2c3e50;
+    color: white;
+}
+
+#eventsTable tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+#eventsTable tr:hover {
+    background-color: #e8f4f8;
+}
+
+/* Event Management Section */
+.event-actions {
+    margin-bottom: 20px;
+}
+
+.event-actions .btn {
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.event-actions .btn:hover {
+    background-color: #2980b9;
+}
+
+#updateEventForm, #deleteEventForm {
+    margin-bottom: 20px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#updateEventForm .form-group, #deleteEventForm .form-group {
+    margin-bottom: 15px;
+}
+
+#updateEventForm label, #deleteEventForm label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+    color: #2c3e50;
+}
+
+#updateEventForm input, #deleteEventForm input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: border-color 0.3s ease;
+}
+
+#updateEventForm input:focus, #deleteEventForm input:focus {
+    border-color: #3498db;
+    outline: none;
+}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Admin Dashboard</h1>
+    </div>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <a href="#dashboard">Dashboard</a>
+            <a href="#manage-users">Manage Users</a>
+            <a href="#manage-events">Manage Events</a>
+            <a href="#settings">Settings</a>
+            <a href="#logout">Logout</a>
+        </div>
+
+        <div class="main-content">
+            <h2>Admin Overview</h2>
+
+          <!-- Manage Users Section -->
+<div id="manage-users" class="card">
+    <h3>Manage Users</h3>
+    
+    <div class="user-actions">
+        <button id="showAllUsers" class="btn">Show All Users</button>
+        <button id="addUserBtn" class="btn">Add User</button>
+    </div>
+       <!-- Update User Form -->
+       <div id="updateUserForm">
+        <h3>Update User</h3>
+        <div class="form-group">
+            <label for="updateUserId">User ID:</label>
+            <input type="text" id="updateUserId" class="form-control" placeholder="Enter User ID">
+        </div>
+        <button id="updateUserBtn" class="btn">Update User</button>
+    </div>
+
+    <!-- Delete User Form -->
+    <div id="deleteUserForm">
+        <h3>Delete User</h3>
+        <div class="form-group">
+            <label for="deleteUserId">User ID:</label>
+            <input type="text" id="deleteUserId" class="form-control" placeholder="Enter User ID">
+        </div>
+        <button id="deleteUserBtn" class="btn btn-danger">Delete User</button>
+    </div>
+
+    <table id="usersTable">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Profession</th>
+                <th>Role ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Last 3 users will be dynamically inserted here -->
+        </tbody>
+    </table>
+
+ 
+</div>
+
+            <!-- Manage Events Section -->
+            <div id="manage-events" class="card">
+                <h3>Manage Events</h3>
+
+                <div class="event-actions">
+                    <button id="showAllEvents" class="btn">Show All Events</button>
+                    <button id="addEventBtn" class="btn">Add Event</button>
+                </div>
+<!-- Update Event Form -->
+<div id="updateEventForm">
+    <h3>Update Event</h3>
+    <div class="form-group">
+        <label for="updateEventId">Event ID:</label>
+        <input type="text" id="updateEventId" class="form-control" placeholder="Enter Event ID">
+    </div>
+    <button id="updateEventBtn" class="btn">Update Event</button>
+</div>
+
+<!-- Delete Event Form -->
+<div id="deleteEventForm">
+    <h3>Delete Event</h3>
+    <div class="form-group">
+        <label for="deleteEventId">Event ID:</label>
+        <input type="text" id="deleteEventId" class="form-control" placeholder="Enter Event ID">
+    </div>
+    <button id="deleteEventBtn" class="btn btn-danger">Delete Event</button>
+</div>
+
+                <table id="eventsTable">
+                    <thead>
+                        <tr>
+                            <th>Event ID</th>
+                            <th>Event Name</th>
+                            <th>Event Date</th>
+                            <th>Destination</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Last 3 events will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            const apiUrl = 'http://localhost:5049/api/User';
+            const eventsApiUrl = 'http://localhost:5049/api/Event';
+            $('#showAllUsers').on('click', function () {
+        window.location.href = 'file:///C:/Users/user/FinalProject0/project-root/views/public/all-user-display.html';
+    });
+
+    // Navigate to add user page
+    $('#addUserBtn').on('click', function () {
+        window.location.href = 'registration.html';
+    });
+
+    // Handle Update User button click
+    $('#updateUserBtn').on('click', function () {
+        const userId = $('#updateUserId').val();
+        if (!userId) {
+            alert('Please enter a User ID');
+            return;
+        }
+        window.location.href = `update-user.html?Userid=${userId}`; // Corrected URL syntax
+    });
+
+    // Handle Delete User button click
+    $('#deleteUserBtn').on('click', function () {
+        const userId = $('#deleteUserId').val();
+        if (!userId) {
+            alert('Please enter a User ID');
+            return;
+        }
+
+        // Confirm before deleting the user
+        if (confirm(`Are you sure you want to delete user with ID: ${userId}?`)) {
+            $.ajax({
+                url: `${apiUrl}/${userId}`, // Corrected the template literal syntax
+                method: 'DELETE',
+                success: function (response) {
+                    alert('User deleted successfully!');
+                    fetchUsers(); // Refresh the user list after deletion
+                    $('#deleteUserId').val(''); // Clear the input field
+                },
+                error: function (error) {
+                    console.error('Error deleting user:', error);
+                    alert('Error deleting user. Please try again.');
+                }
+            });
+        }
+    });
+    // Handle Update Event button click
+$('#updateEventBtn').on('click', function () {
+    const eventId = $('#updateEventId').val();
+    if (!eventId) {
+        alert('Please enter an Event ID');
+        return;
+    }
+    window.location.href = `file:///C:/Users/user/FinalProject0/project-root/views/public/uptadte-event.html?Eventid=${eventId}`; // Redirect to the event update page
+});
+
+// Handle Delete Event button click
+$('#deleteEventBtn').on('click', function () {
+    const eventId = $('#deleteEventId').val();
+    if (!eventId) {
+        alert('Please enter an Event ID');
+        return;
+    }
+
+    // Confirm before deleting the event
+    if (confirm(`Are you sure you want to delete the event with ID: ${eventId}?`)) {
+        $.ajax({
+            url: `${eventsApiUrl}/${eventId}`, // Assuming your API endpoint for events follows this pattern
+            method: 'DELETE',
+            success: function (response) {
+                alert('Event deleted successfully!');
+                fetchEvents(); // Refresh the event list after deletion
+                $('#deleteEventId').val(''); // Clear the input field
+            },
+            error: function (error) {
+                console.error('Error deleting event:', error);
+                alert('Error deleting event. Please try again.');
+            }
+        });
+    }
+});
+
+
+    // Handle event management actions
+    $('#showAllEvents').on('click', function () {
+        window.location.href = 'file:///C:/Users/user/FinalProject0/project-root/views/public/all-event-display.html'; // Navigate to the events page
+    });
+
+    $('#addEventBtn').on('click', function () {
+        window.location.href = 'file:///C:/Users/user/FinalProject0/project-root/views/public/Add-event.html';
+    });
+            // Fetch users from the API
+            function fetchUsers() {
+                $.ajax({
+                    url: apiUrl,
+                    method: 'GET',
+                    success: function(data) {
+                        let usersTable = $('#usersTable tbody');
+                        usersTable.empty();
+
+                        // Get the last 3 users
+                        const lastThreeUsers = data.$values.slice(-3);
+
+                        lastThreeUsers.forEach(user => {
+                            usersTable.append(`
+                                <tr>
+                                    <td>${user.userid}</td>
+                                    <td>${user.name || ''}</td>
+                                    <td>${user.email || ''}</td>
+                                    <td>${user.profession || ''}</td>
+                                    <td>${user.roleid || ''}</td>
+                                </tr>
+                            `);
+                        });
+                    },
+                    error: function(error) {
+                        console.error('Error fetching users:', error);
+                    }
+                });
+            }
+
+            // Fetch events from the API
+            function fetchEvents() {
+                $.ajax({
+                    url: eventsApiUrl,
+                    method: 'GET',
+                    success: function(data) {
+                        let eventsTable = $('#eventsTable tbody');
+                        eventsTable.empty();
+
+                        // Get the last 3 events
+                        const lastThreeEvents = data.$values.slice(-3);
+
+                        lastThreeEvents.forEach(event => {
+                            eventsTable.append(`
+                                <tr>
+                                     <td>${event.eventid}</td>
+                                    <td>${event.name || ''}</td>
+                                    <td>${event.dateto ? new Date(event.dateto).toLocaleDateString() : 'TBA'}</td>
+                                    <td>${event.destination || 'TBA'}</td>
+                                    <td>${event.status || 'Unknown'}</td>
+                                </tr>
+                            `);
+                        });
+                    },
+                    error: function(error) {
+                        console.error('Error fetching events:', error);
+                    }
+                });
+            }
+        
+       // Handle user management actions
+
+
+    // Navigate to show all users page
+  
+
+    // Fetch data when the page loads
+    fetchUsers();
+    fetchEvents();
+});
+
+// Function to fetch users (implementation needed)
+function fetchUsers() {
+    // Add logic to retrieve and display users in the table
+}
+
+// Function to fetch events (implementation needed)
+function fetchEvents() {
+    // Add logic to retrieve and display events in the table
+}
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile Dashboard</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f5a623;
+            --background-color: #f0f4f8;
+            --text-color: #333;
+            --sidebar-color: #2c3e50;
+            --card-background: #ffffff;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.8em;
+            font-weight: 600;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-color);
+            color: #fff;
+            padding: 30px 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            color: #fff;
+            margin-bottom: 30px;
+            font-size: 24px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            padding: 15px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            transition: var(--transition);
+        }
+
+        .sidebar ul li:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .dashboard-section {
+            background-color: var(--card-background);
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+        }
+
+        h3 {
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            font-size: 1.75em;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .profile-container {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .profile-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-right: 30px;
+            background-color: #ddd;
+            background-position: center;
+            background-size: cover;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-info {
+            flex-grow: 1;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        .profile-info p {
+            margin: 8px 0;
+        }
+
+        .profile-info strong {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .profile-actions {
+            width: 100%;
+            text-align: right;
+            margin-top: 20px;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        button:hover {
+            background-color: #3a7bd5;
+            transform: translateY(-2px);
+        }
+
+        .events-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .event-box {
+            background-color: var(--card-background);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+
+        .event-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .event-box h4 {
+            font-size: 1.3em;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .event-box p {
+            font-size: 0.9em;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .event-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .event-actions button {
+            width: 48%;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .subscribe-btn {
+            background-color: var(--secondary-color);
+        }
+
+        .subscribe-btn:hover {
+            background-color: #e09612;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 20px;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .profile-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-photo {
+                margin: 0 auto 20px;
+            }
+
+            .profile-actions {
+                text-align: center;
+            }
+
+            .events-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        .joined-events-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .joined-event-item {
+            background-color: var(--card-background);
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+
+        .joined-event-item:hover {
+            transform: translateX(5px);
+        }
+
+        .joined-event-item h4 {
+            margin: 0 0 10px 0;
+            color: var(--primary-color);
+        }
+
+        .joined-event-item p {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+      
+        #notification {
+            display: none; /* Initially hidden */
+        }
+        .subscribed-btn {
+    background-color: #4CAF50 !important; /* Green color */
+    cursor: default !important;
+}
+
+.subscribed-btn:hover {
+    background-color: #45a049 !important;
+}
+    </style>
+</head>
+<body>
+    <header>User Profile Dashboard</header>
+
+    <div class="dashboard-container">
+        <!-- Sidebar for navigation -->
+        <div class="sidebar">
+            <h2>Dashboard</h2>
+            <ul>
+                <li id="profileNav">Profile Info</li>
+                <li id="eventsNav">Events</li>
+                <li id="joinedEventsNav">Events I Joined</li>
+                <li id="historyNav">History</li>
+            </ul>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Profile Info Section -->
+            <section id="profileSection" class="dashboard-section">
+                <h3>Your Profile</h3>
+                <div class="profile-container">
+                    <div class="profile-photo" id="profilePhoto"></div>
+                    <div id="profileData" class="profile-info">
+                        <!-- User data will be populated here -->
+                    </div>
+                </div>
+                <div class="profile-actions">
+                    <button id="editBtn">Edit Profile</button>
+                </div>
+            </section>
+
+            <!-- Events Section -->
+            <section id="eventsSection" class="dashboard-section" style="display: none;">
+                <h3>Available Events</h3>
+                <div id="eventsContainer" class="events-container">
+                    <!-- Events will be populated here -->
+                </div>
+            </section>
+
+            <!-- Events I Joined Section -->
+            <section id="joinedEventsSection" class="dashboard-section" style="display: none;">
+                <h3>Events I Joined</h3>
+                <ul id="joinedEventsList" class="joined-events-list">
+                    <!-- Joined events will be populated here -->
+                </ul>
+            </section>
+
+            <!-- History Section -->
+            <section id="historySection" class="dashboard-section" style="display: none;">
+                <h3>History</h3>
+                <p>No history records found.</p>
+            </section>
+        </div>
+    </div>
+
+            </section>
+
+            <!-- History Section -->
+            <section id="historySection" class="dashboard-section" style="display: none;">
+                <h3>History</h3>
+                <p>No history records found.</p>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            function getUrlParameter(name) {
+                name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+                var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+                var results = regex.exec(location.search);
+                return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+            }
+    
+            var userId = getUrlParameter('userid');
+    
+            function fetchUserProfile(id) {
+                $.ajax({
+                    url: `http://localhost:5049/api/User/${id}`,
+                    type: 'GET',
+                    contentType: 'application/json',
+                    success: function(userData) {
+                        displayUserProfile(userData);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error fetching user data:", xhr.responseText);
+                        $('#profileData').html('<p>Error loading user data. Please try again later.</p>');
+                    }
+                });
+            }
+    
+            function displayUserProfile(userData) {
+                if (!userData || Object.keys(userData).length === 0) {
+                    $('#profileData').html('<p>No user data available.</p>');
+                    return;
+                }
+    
+                let profileHtml = `
+                    <p><strong>User ID:</strong> ${userData.userid || 'N/A'}</p>
+                    <p><strong>Name:</strong> ${userData.name || 'N/A'}</p>
+                    <p><strong>Email:</strong> ${userData.email || 'N/A'}</p>
+                    <p><strong>Date of Birth:</strong> ${userData.dateofbirth ? new Date(userData.dateofbirth).toLocaleDateString() : 'N/A'}</p>
+                    <p><strong>Role ID:</strong> ${userData.roleid || 'N/A'}</p>
+                `;
+                $('#profileData').html(profileHtml);
+    
+                if (userData.photo) {
+                    $('#profilePhoto').css('background-image', `url(${userData.photo})`);
+                }
+            }
+    
+            // Fetch user profile on page load
+            if (userId) {
+                fetchUserProfile(userId);
+            }
+    
+            const eventsApiUrl = 'http://localhost:5049/api/Event';
+    
+            function fetchEvents() {
+                $.ajax({
+                    url: eventsApiUrl,
+                    method: 'GET',
+                    success: function(data) {
+                        let eventsContainer = $('#eventsContainer');
+                        eventsContainer.empty();
+                        
+                        if (data && data.$values && data.$values.length > 0) {
+                            data.$values.forEach(event => {
+                                eventsContainer.append(`
+                                    <div class="event-box">
+                                        <h4>${event.name}</h4>
+                                        <p>${event.description}</p>
+                                        <p><strong>Date:</strong> ${event.dateto ? new Date(event.dateto).toLocaleDateString() : 'TBA'}</p>
+                                        <p><strong>Destination:</strong> ${event.destination || 'TBA'}</p>
+                                        <div class="event-actions">
+                                            <button class="subscribe-btn" data-event-id="${event.eventid}">Subscribe</button>
+                                            <button class="details-btn" data-event-id="${event.eventid}">Details</button>
+                                        </div>
+                                    </div>
+                                `);
+                            });
+
+                            // Add click event listener for Subscribe buttons
+                            $('.subscribe-btn').on('click', function() {
+                                const eventId = $(this).data('event-id');
+                                subscribeToEvent(eventId, $(this));
+                            });
+
+                            // Add click event listener for Details buttons
+                            $('.details-btn').on('click', function() {
+                                const eventId = $(this).data('event-id');
+                                window.location.href = `details.html?eventid=${eventId}`;
+                            });
+                        } else {
+                            eventsContainer.append('<p>No events available at the moment.</p>');
+                        }
+                    },
+                    error: function(error) {
+                        console.error('Error fetching events:', error);
+                        $('#eventsContainer').html('<p>Error loading events. Please try again later.</p>');
+                    }
+                });
+            }
+
+            function subscribeToEvent(eventId, buttonElement) {
+                // Ensure we have a valid userId
+                if (!userId) {
+                    alert('User ID is missing. Please log in again.');
+                    return;
+                }
+
+                const subscriptionData = {
+                    eventId: eventId,
+                    memberId: userId
+                };
+
+                // Disable the button and change text while processing
+                buttonElement.prop('disabled', true).text('Subscribing...');
+
+                $.ajax({
+                    url: 'http://localhost:5049/api/EventMember/add-member',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(subscriptionData),
+                    success: function(response) {
+                        // Change button color to green and update text
+                        buttonElement.removeClass('subscribe-btn').addClass('subscribed-btn');
+                        buttonElement.text('Subscribed');
+                        // Keep the button disabled to prevent multiple subscriptions
+                        buttonElement.prop('disabled', true);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error subscribing to event:', xhr.responseText);
+                        alert('Error subscribing to the event. Please try again.');
+                        // Re-enable the button and revert text on error
+                        buttonElement.prop('disabled', false).text('Subscribe');
+                    }
+                });
+            }
+
+
+        
+            function fetchJoinedEvents() {
+                // This is a mock function. Replace with actual API call when available.
+                let mockJoinedEvents = [
+                    { id: 1, name: "Summer Coding Bootcamp", date: "2023-07-15", location: "San Francisco" },
+                    { id: 2, name: "AI Conference", date: "2023-08-22", location: "New York" },
+                    { id: 3, name: "Web Development Workshop", date: "2023-09-10", location: "Online" }
+                ];
+    
+                let joinedEventsList = $('#joinedEventsList');
+                joinedEventsList.empty();
+    
+                if (mockJoinedEvents.length > 0) {
+                    mockJoinedEvents.forEach(event => {
+                        joinedEventsList.append(`
+                            <li class="joined-event-item">
+                                <h4>${event.name}</h4>
+                                <p><strong>Date:</strong> ${event.date}</p>
+                                <p><strong>Location:</strong> ${event.location}</p>
+                            </li>
+                        `);
+                    });
+                } else {
+                    joinedEventsList.append('<li>You have not joined any events yet.</li>');
+                }
+            }
+    
+            // Sidebar Navigation
+            $('#profileNav').click(function() {
+                $('.dashboard-section').hide();
+                $('#profileSection').show();
+            });
+    
+            $('#eventsNav').click(function() {
+                $('.dashboard-section').hide();
+                $('#eventsSection').show();
+                fetchEvents();
+            });
+    
+            $('#joinedEventsNav').click(function() {
+                $('.dashboard-section').hide();
+                $('#joinedEventsSection').show();
+                fetchJoinedEvents();
+            });
+    
+            $('#historyNav').click(function() {
+                $('.dashboard-section').hide();
+                $('#historySection').show();
+            });
+    
+            // Edit Profile Button
+            $('#editBtn').click(function() {
+                window.location.href = `edit-user.html?userid=${userId}`;
+            });
+    
+            // Initialize dashboard
+            $('#profileSection').show();
+            fetchUserProfile(userId);
+        });
+       
+        const apiUrl = 'http://localhost:5049/api/Event'; // Update the endpoint if necessary
+        const subscribeUrl = 'http://localhost:5049/api/EventMember/add-member'; // Endpoint to add member to event
+
+        // Function to show notifications
+        function showNotification(message, isSuccess) {
+            const notification = $('#notification');
+            notification.text(message);
+            notification.removeClass('alert-success alert-danger');
+            notification.addClass(isSuccess ? 'alert-success' : 'alert-danger');
+            notification.show();
+
+            // Hide notification after 3 seconds
+            setTimeout(() => {
+                notification.fadeOut();
+            }, 3000);
+        }
+
+        // Event form submission
+        $('#addEventForm').on('submit', function(e) {
+            e.preventDefault();
+            let formData = {
+                name: $('#name').val(),
+                description: $('#description').val(),
+                category: $('#category').val(),
+                destination: $('#destination').val(),
+                datefrom: $('#dateFrom').val(),
+                dateto: $('#dateTo').val(),
+                cost: parseFloat($('#cost').val()) || null,  // Ensure cost is a valid number or null
+                status: $('#status').val()
+            };
+
+            $.ajax({
+                url: apiUrl,
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                success: function(response) {
+                    showNotification('Event added successfully!', true);
+                    $('#addEventForm')[0].reset(); // Clear the form
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error adding event:', xhr.responseText);
+                    showNotification('Error adding event. Please try again.', false);
+                }
+            });
+        });
+
+        // Subscribe button click
+        $('#subscribeBtn').on('click', function() {
+            let eventId = 1; // Replace with the actual event ID, e.g., from the event added
+            let memberId = 1; // Replace with the actual member ID, likely retrieved from session or another source
+
+            let subscriptionData = {
+                eventId: eventId,
+                memberId: memberId
+            };
+
+            $.ajax({
+                url: subscribeUrl,
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(subscriptionData),
+                success: function(response) {
+                    showNotification('Subscribed to the event successfully!', true);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error subscribing to event:', xhr.responseText);
+                    showNotification('Error subscribing to the event. Please try again.', false);
+                }
+            });
+        });
+    </script>
+ 
+</body>
+</html>
